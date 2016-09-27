@@ -1,0 +1,66 @@
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{amssymb}
+\usepackage{babel}
+\begin{document}
+
+\title{A bandit framework to speed up Franck-Wolfe}
+
+
+\author{Aurélien Bellet, Michal Valko, Claire Vernade}
+
+\maketitle
+The objective is to solve the following convex optimization problem
+given a convex set of constraints $\mathcal{D}\in\mathbb{R}^{d}$:
+
+\[
+\min_{x\in\mathcal{D}}f(x)=\sum_{i=1}^{n}f_{i}(x).
+\]
+For that task, we suggest to use Franck-Wolfe algorithm that proceeds
+in two steps : start with $x^{(0)}$ and iterate for $k=0,1,...$
+\begin{enumerate}
+\item $s^{(k)}=\arg\min_{s\in D}\left\langle s,\nabla f(x^{(k)})\right\rangle $,
+(direction finding),
+\item $x^{(k+1)}=(1-\gamma_{k})x^{(k)}+\gamma_{k}s^{(k)}$ , for a well
+chosen $\gamma_{k}$ in order to guarantee convergence.
+\end{enumerate}
+At each iteration, for the direction finding step, the algorithm is
+supposed to solve a constrained linear minimization problem. However,
+due to very large $n$, computing the exact gradient $\nabla f(x^{(k)})$
+can be very costly and it is interesting to solve the problem using
+only approximates of it. It is possible to show that Franck-Wolfe
+can converge even if the direction $s^{(k)}$ used at each iteration
+is not exact, especially at the beginning of the procedure. 
+
+Consequently, the new problem consists in being able to solve the
+direction finding step using, for example, an online optimization
+algorithm under noisy linear feedback. At round $k$, the algorithm will have to 
+try various points $y_1,...,y_l$ and output $s^{(k)}$. We need to decide 
+whether we want to impose a fixed confidence $\epsilon_k$ that control how far 
+from the true optimal direction we can move, or whether we prefer to fix a 
+number of exploration points so that it does take too long to make a decision. 
+
+Remarks and questions : 
+\begin{itemize}
+	\item Maybe we can use regularity assumptions on $f$ in order to speed up 
+	the learning between steps $k$ and $k+1$ : the gradient should not vary too 
+	much...
+	\item We are not in an adversarial case,
+	\item In order to evaluate query point $y_i$, an estimate of the gradient 
+	based on data samples is used to compute the scalar product $\left\langle 
+	y_i,\nabla f(x^{(k)})\right\rangle$. It means that we only have noisy 
+	feedback. Should the estimate vary along the exploration phase ? Should we 
+	compute a new gradient estimate for each query point evaluation ? 
+	\item The usual regret seems not to be the right metric as we don't mind 
+	exploring wildly as long as the final decision is the right one. Simple 
+	regret seems better. 
+	\item In some special cases, say L1 or simplex constraints, the direction 
+	we are looking for may take a finite number of values having only one 
+	active coordinate at a time. 
+	\item The literature on online optimization is quite rich, which would be 
+	the closest papers ? 
+\end{itemize}
+
+ 
+\end{document}
