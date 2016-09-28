@@ -3,12 +3,14 @@
 \usepackage[latin9]{inputenc}
 \usepackage{amssymb}
 \usepackage{babel}
+
+
 \begin{document}
 
 \title{A bandit framework to speed up Franck-Wolfe}
 
 
-\author{Aur�lien Bellet, Michal Valko, Claire Vernade}
+\author{Aurélien Bellet, Michal Valko, Claire Vernade}
 
 \maketitle
 The objective is to solve the following convex optimization problem
@@ -61,6 +63,22 @@ Remarks and questions :
 	\item The literature on online optimization is quite rich, which would be 
 	the closest papers ? 
 \end{itemize}
+
+\section{literature review}
+
+\susection{Greedy methods, randomization approaches and multi-arm bandit algorithms for efficient sparsity-constrained optimization}
+
+This is a journal paper on sparsity-constrained optimization that extends a previous conference version published at EUSIPCO 2015. It considers several algorithms (Matching Pursuit, Orthogonal Matching Pursuit and Frank-Wolfe) and shows that in the case of L1 regularization it is possible to speed up the direction finding step thanks to best-arm identification. In the FW algorithm, one needs to compute the gradient wihch is a matrix-vector product $X^T v$ where $X$ has dimension $n \times d$ ($d$ being potentially larger than $n$). However, because of the sparsity contraints, one expects the gradient to have only a few nonzero components among the $d$ available ones. Thus, the best-arm identification aims at finding efficiently those components. The authors suggest to use Successive halving (Karnin et al , ICML 2013) in a fixed-budget setting.
+
+A few ideas that could improve on their results :
+\begin{enumerate}
+\item Because the required precision on the chosen gradient increases with the number of iterations, one would probably prefer a best-arm identification in a fixed-confidence setting so that the number of pulls is smaller in the first rounds and gets larger only when it is necessary;
+\item The regularity hypotheses on the function imply that, depending on the size of the step size, the gradients at round $k$ and $k+1$ are close to each other. This means that, when looking for best arms, one should take into account the information of the previous iteration(s) somehow as a prior knowledge ($\approx$  tranfer learning ? );
+\item As a remark, one may say that the problem of finding the gradient for L1 contrained problem is not that hard and already works quite well and quite fast without any bandit speeding so it may be necessary to justify the added value of our work, or even have another improvement on more difficult problems.
+\end{enumerate}
+
+\section{Open problem}
+
 
  
 \end{document}
